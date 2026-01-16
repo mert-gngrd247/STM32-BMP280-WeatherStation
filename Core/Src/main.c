@@ -33,7 +33,7 @@
  * Hardware: STM32 Nucleo-G031K8
  */
 
-
+#define CSV_FORMAT_ON 1
 #include <stdio.h>
 #include <string.h>
 /* USER CODE END Includes */
@@ -58,9 +58,9 @@
 /* USER CODE BEGIN PV */
 // Calibration parameters (factory constants)
 uint16_t dig_T1;
-int16_t dig_T2, dig_T3;
+int16_t  dig_T2, dig_T3;
 uint16_t dig_P1;
-int16_t dig_P2, dig_P3, dig_P4, dig_P5, dig_P6, dig_P7, dig_P8, dig_P9;
+int16_t  dig_P2, dig_P3, dig_P4, dig_P5, dig_P6, dig_P7, dig_P8, dig_P9;
 
 // Variable to hold "fine temperature" for pressure calculation
 int32_t t_fine;
@@ -213,9 +213,14 @@ int main(void) {
 		// We convert Pascals (Pa) to Hectopascals (hPa) by dividing by 100
 		// Standard sea level pressure is roughly 1013 hPa.
 		char msg[64];
+
+
+#if CSV_FORMAT_ON
+		sprintf(msg, "%ld,%ld\r\n", (temp_100 / 100), (press_Pa / 100));
+#else
 		sprintf(msg, "Temp: %ld.%02ld C | Press: %ld hPa\r\n", temp_100 / 100,
 				temp_100 % 100, press_Pa / 100);
-
+#endif
 		HAL_UART_Transmit(&huart2, (uint8_t*) msg, strlen(msg), 100);
 		HAL_Delay(500);
 	}
